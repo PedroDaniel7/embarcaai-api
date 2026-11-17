@@ -1,0 +1,11 @@
+O script original de Banco da equipe esta em:
+  sql/00_banco_original_do_grupo.sql
+
+Ordem de instalacao no Oracle da FIAP (BANCO VAZIO):
+  1. sql/00_banco_original_do_grupo.sql
+  2. sql/01_sequences_java.sql
+
+ATENCAO: no script original, apos a carga de dados, existem comandos
+UPDATE e DELETE demonstrativos. Eles alteram 2 registros e excluem
+uma reserva. Isso eh intencional no material da disciplina Banco.
+

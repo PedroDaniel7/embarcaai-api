@@ -1,0 +1,69 @@
+### Base local. Sequences comecam em 1000 apenas quando executadas pela primeira vez.
+### 1. Dados ja cadastrados pelo script original do grupo
+GET http://localhost:8080/pacientes
+
+### 2. Unidades e vans existentes
+GET http://localhost:8080/unidades
+
+### 3. Cadastro novo de paciente (201 + Location). Anote o ID devolvido.
+POST http://localhost:8080/pacientes
+Content-Type: application/json
+
+{"nome":"Paciente Demonstração","telefone":"11999887766","dataNascimento":"1988-02-15","zonaRural":"S"}
+
+### 4. Cadastro de consulta (201). Ajustar pacienteId se nao for 1000.
+POST http://localhost:8080/consultas
+Content-Type: application/json
+
+{"pacienteId":1000,"unidadeId":4,"especialidade":"Cardiologia","dataHora":"2026-12-15T09:00:00","precisaTransporte":"S","status":"AGENDADA"}
+
+### 5. Cadastro de viagem (201). Van e unidade ja existem no banco do grupo.
+POST http://localhost:8080/viagens
+Content-Type: application/json
+
+{"vanId":1,"unidadeDestinoId":4,"dataHoraSaida":"2026-12-15T06:00:00","status":"PROGRAMADA"}
+
+### 6. Cadastro de reserva de assento (201). Ajustar os IDs se necessario.
+POST http://localhost:8080/reservas
+Content-Type: application/json
+
+{"consultaId":1000,"viagemId":1000,"statusTransporte":"PENDENTE"}
+
+### 7. Ocupacao antes da confirmacao
+GET http://localhost:8080/viagens/1000/ocupacao
+
+### 8. Simular resposta VOU -> CONFIRMOU
+POST http://localhost:8080/consultas/1000/respostas
+Content-Type: application/json
+
+{"resposta":"CONFIRMOU"}
+
+### 9. Consultar confirmacao e lembrete
+GET http://localhost:8080/consultas/1000/lembretes
+
+### 10. Simular NAO VOU -> CANCELOU (libera a reserva)
+POST http://localhost:8080/consultas/1000/respostas
+Content-Type: application/json
+
+{"resposta":"CANCELOU"}
+
+### 11. Assentos livres depois do cancelamento
+GET http://localhost:8080/viagens/1000/ocupacao
+
+### 12. Erro 400: nome vazio
+POST http://localhost:8080/pacientes
+Content-Type: application/json
+
+{"nome":"","telefone":"11999999999","dataNascimento":"2000-02-10","zonaRural":"S"}
+
+### 13. Erro 404: id inexistente
+GET http://localhost:8080/consultas/999999
+
+### 14. Erro 405: PATCH nao existe nesse controlador
+PATCH http://localhost:8080/pacientes/1
+
+### 15. Erro 409: consulta 1 vai ao hospital 4; viagem 2 vai a unidade 3
+POST http://localhost:8080/reservas
+Content-Type: application/json
+
+{"consultaId":1,"viagemId":2,"statusTransporte":"PENDENTE"}
